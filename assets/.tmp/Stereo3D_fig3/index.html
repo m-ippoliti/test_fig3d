@@ -5,6 +5,8 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=1024">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     	<title id="title_id">Fig3D - </title>
     	<link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
     	<script src="assets/js_files/ie_polyfills.js"></script>
@@ -40,10 +42,9 @@
             .viewer_wnd{
               margin-top: 10px; 
               margin-left: 280px; 
-              width: auto; 
-              height:87vh; 
+              width: auto; height:87vh; 
               min-height: 75vh; 
-              max-height: 90vh;
+              max-height: 90vh; 
               padding: 0 0 0 0;
             }
             
@@ -88,16 +89,6 @@
               color:#000!important;
               background-color:#ccc!important;
             }
-            
-            body {
-              min-height: 100vh;
-              min-height: -webkit-fill-available;
-            }
-            
-            html {
-              height: -webkit-fill-available;
-            }
-
         </style>
         
 	</head>
@@ -135,14 +126,14 @@
             }
               
             async function prep_doc() {
-                jsonobj = JSON.parse(JSON.stringify(await getJson()));
-                
+                let jsonobj = JSON.parse(JSON.stringify(await getJson()));
                 var nav_title_text = `<p style="padding-top:15px; color:#000000;"><b><u>`+jsonobj["title"]+`</u></b></p>`;
-                var text = "";  
+                var text = "";
+                  
                 var keys = Object.keys(jsonobj["content"]);
                   
                 Object.keys(jsonobj["content"]).forEach(function(key) {    
-                  text += `<a class="w3-bar-item my-button" id=` + "a_panel_".concat(key.toLowerCase()) + `  href="javascript:swap_panel('` + key + `');"><p style="padding-top: 10px;">Panel ` + key.toUpperCase() + `</p></a>`;
+                  text += `<a class="w3-bar-item my-button" id=` + "a_panel_".concat(key.toLowerCase()) + `  href="javascript:change_panel('` + key.toLowerCase() + `');"><p style="padding-top: 10px;">Panel ` + key.toUpperCase() + `</p></a>`;
                 })
                                             
                 document.getElementById("dynlist_div").innerHTML = nav_title_text + text;   
@@ -150,24 +141,26 @@
                 
                 stl_viewer = new StlViewer(document.getElementById("stl_cont"), {});
                 
-                swap_panel(keys[0]); 
-            } 
-      	
-            async function swap_panel(sample_tag) {
-              document.getElementById("stl_caption").innerHTML = jsonobj["content"][sample_tag.toUpperCase()]["caption"];
+                change_panel(keys[0]);
+            }   
+            
+            async function change_panel(sample_tag) {            
+              let jsonobj = JSON.parse(JSON.stringify(await getJson()));   
               
-              Object.keys(jsonobj["content"]).forEach(function(key) {                  
+              stl_viewer.clean();
+              stl_viewer.add_model({id:1, filename:"../stl_files/"+jsonobj["content"][sample_tag.toUpperCase()]["fname"]});
+              
+              document.getElementById("stl_caption").innerHTML = jsonobj["content"][sample_tag.toUpperCase()]["caption"];       
+              
+              Object.keys(jsonobj["content"]).forEach(function(key) {    
+                            
                 if (key.toLowerCase() == sample_tag.toLowerCase()) {
                   document.getElementById("a_panel_".concat(key.toLowerCase())).style.backgroundColor = "#C0C0C0";
                 } else {
                   document.getElementById("a_panel_".concat(key.toLowerCase())).style.backgroundColor = "transparent";
                 }
               })
-              
-              stl_viewer.clean();
-              stl_viewer.add_model({id:1, filename:"../stl_files/"+jsonobj["content"][sample_tag.toUpperCase()]["fname"]});              
-            }  
-                                          
+            }           
         </script>	
         
     </div>
